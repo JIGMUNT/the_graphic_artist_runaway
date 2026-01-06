@@ -8,6 +8,8 @@ TagManager:
   - TopWall
   - Wall
   - block
+  - BallOut
+  - Score
   layers:
   - Default
   - TransparentFX

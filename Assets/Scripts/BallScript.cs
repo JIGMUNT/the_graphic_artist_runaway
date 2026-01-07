@@ -9,6 +9,8 @@ public class BallScript : MonoBehaviour
     public Rigidbody2D rb;
     public float speed;
 
+    public GameObject[] itemPrefabs;
+
     private bool isOnSpaceKey;  // 스페이스 바 확인용
 
     void Start()
@@ -22,6 +24,13 @@ public class BallScript : MonoBehaviour
         if (!isOnSpaceKey && Input.GetKeyDown(KeyCode.Space))
         {
             isOnSpaceKey = true;
+
+            // GameManager를 찾아 GameStart 함수 실행
+            GameManager gm = FindObjectOfType<GameManager>();
+            if (gm != null)
+            {
+                gm.GameStart();
+            }
         }
     }
 
@@ -61,10 +70,21 @@ public class BallScript : MonoBehaviour
 
             // GameManager를 찾아 점수 추가
             GameManager gm = FindObjectOfType<GameManager>();
+            FindObjectOfType<GameManager>().PlaySFX(FindObjectOfType<GameManager>().blockBreakClip);
             if (gm != null)
                 gm.AddScore(100);
 
-            collision.gameObject.SetActive(false);
+            collision.collider.enabled = false;
+
+            if (Random.value <= 0.3f) 
+            {
+                int randomIndex = Random.Range(0, itemPrefabs.Length);
+                Instantiate(itemPrefabs[randomIndex], collision.transform.position, Quaternion.identity);
+            }
+
+            //collision.gameObject.SetActive(false);
+            // 오브젝트를 삭제 (0.1초 뒤에 삭제하여 물리 연산 꼬임 방지)
+            Destroy(collision.gameObject, 0.1f);
         }
         else if(collision.collider.CompareTag("BallOut"))
         {
